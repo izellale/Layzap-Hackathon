@@ -2,3 +2,8 @@ langchain
 langchain-community
 openai
 python-dotenv
+langchain-openai
+sentence-transformers
+einops
+faiss-cpu
+tiktoken
