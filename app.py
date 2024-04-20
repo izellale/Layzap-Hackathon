@@ -64,7 +64,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
 async def country(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     """Stores the selected country and asks for questions."""
     user = update.message.from_user
-    logger.info(f"Country of {user} : {update.message.text}")
+    logger.info(f"Country of {user.first_name} : {update.message.text}")
     await update.message.reply_text(
         f"{update.message.text},  awesome!\n"
         "Tell me, what do you want to know about your installation there?",
@@ -79,6 +79,7 @@ async def country(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
 async def question(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     """Stores the country and asks for a question."""
     user = update.message.from_user
+    logger.info(f"{user} says : {update.message.text}")
     await update.message.reply_text(update.message.text)
 
     return QUESTION
