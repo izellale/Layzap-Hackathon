@@ -27,9 +27,13 @@ from telegram.ext import (
     filters,
 )
 from dotenv import load_dotenv
+from rag import WelcomeChatBot
 
 # Load environment variables from .env file
 load_dotenv()
+
+chatbot = WelcomeChatBot()
+chatbot.setup_config()
 
 # Access environment variables
 TELEGRAM_KEY = os.environ['TELEGRAM_KEY']
@@ -80,7 +84,7 @@ async def question(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     """Stores the country and asks for a question."""
     user = update.message.from_user
     logger.info(f"{user} says : {update.message.text}")
-    await update.message.reply_text(update.message.text)
+    await update.message.reply_text(chatbot.get_answer(update.message.text))
 
     return QUESTION
 
