@@ -11,7 +11,7 @@ soup = BeautifulSoup(r.content, 'html.parser')
 
 
 
-paragraphs = soup.find(class_="col-md-8 vd-content-column")
+paragraphs = soup.find(class_="container mt-5 vd-content")
 with open(URL.split('/')[-1], 'w', encoding='utf-8') as file:
     file.write(paragraphs.get_text(strip=True))
 
@@ -22,7 +22,7 @@ for link in links:
     url = link.get('href')
     if url:
         if url.startswith('/'):
-            valid.append("https://www.vd.ch" + url)
+            valid.append('https://www.vd.ch' + url)
 
 
 def fetch_and_extract_text(url):
@@ -33,9 +33,12 @@ def fetch_and_extract_text(url):
 
         # Parse the page
         page_soup = BeautifulSoup(response.text, 'html.parser')
-        page_content = soup.find(class_="col-md-8 vd-content-column")
+        page_content = page_soup.find(class_="container mt-5 vd-content")
         # Extract text
-        return page_content.get_text(strip=True)
+        if page_content:
+            return page_content.get_text(strip=True)
+        else:
+            return None
     except requests.RequestException as e:
         print(f"Error fetching {url}: {e}")
         return None
@@ -46,4 +49,4 @@ for link in tqdm(valid, total=len(valid)):
     if text:
         if link.split('/')[-1] != '':
             with open(link.split('/')[-1], 'w', encoding='utf-8') as file:
-                file.write(paragraphs.get_text(strip=True))
+                file.write(text)
