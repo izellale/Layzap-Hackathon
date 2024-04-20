@@ -15,7 +15,7 @@ from processing.utils import create_db
 
 class WelcomeChatBot:
 
-    def __init__(self, db_path='/Users/hamza/Desktop/Layzap-Hackathon/data/vector_db'):
+    def __init__(self, db_path="./data/vector_db"):
         self.vectorstore = create_db(db_path)
 
         self.retriever = self.vectorstore.as_retriever(search_type="similarity", search_kwargs={'k': 6})
@@ -35,7 +35,7 @@ class WelcomeChatBot:
         # Should take `chat_history` and `question` as input variables.
 
         self.template = (
-            """ Anwer to the question given at the end, while using the given context, and chat history :
+            """ Answer the following question using the context provided and also search for more information related to the question
                 context : 
                 {context}
 
@@ -64,9 +64,4 @@ class WelcomeChatBot:
         self.chat_history.append(f'USER : {user_query}')
         self.chat_history.append(f'AI : {answer.content}')
 
-        return answer.content        
-    
-chatbot = WelcomeChatBot()
-chatbot.setup_config()
-
-print(chatbot.get_answer("What are the best swiss banks ? "))
+        return answer.content
