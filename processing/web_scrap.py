@@ -5,7 +5,7 @@ from tqdm import tqdm
 import os
 
 
-URL = "https://www.vd.ch/population/population-etrangere/entree-et-sejour/etats-tiers/types-de-sejour-etats-tiers"
+URL = "https://www.vd.ch/population/population-etrangere/entree-et-sejour/transformation-de-lautorisation-de-sejour-b-en-autorisation-detablissement-c"
 r = requests.get(URL)
 soup = BeautifulSoup(r.content, 'html.parser')
 
