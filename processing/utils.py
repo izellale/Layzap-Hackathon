@@ -10,12 +10,10 @@ text_splitter = RecursiveCharacterTextSplitter.from_tiktoken_encoder(
     chunk_overlap=0,
 )
 
-
 def get_embeddings(model_name="nomic-ai/nomic-embed-text-v1"):
     model_kwargs = {'trust_remote_code': True}
     embeddings = HuggingFaceEmbeddings(model_name=model_name, model_kwargs=model_kwargs)
     return embeddings
-
 
 def retrieve_documents(path) -> list:
     """
@@ -41,7 +39,6 @@ def retrieve_documents(path) -> list:
 
     return documents
 
-
 def get_vector_db(documents, embeddings):
     """
     Return Vector Database from LangChain documents
@@ -52,9 +49,16 @@ def get_vector_db(documents, embeddings):
     faiss_index = FAISS.from_documents(documents, embeddings)
     return faiss_index
 
-
-if __name__ == '__main__':
-    DATA_FOLDER = "../data/raw_data/"
-    documents = retrieve_documents(DATA_FOLDER)
+def create_db(vector_path, raw_file="data/raw_data/"):
+    
     embedding = get_embeddings()
+
+    if vector_path!='':
+        vector_db = FAISS.load_local(folder_path=vector_path, index_name="faiss_index", embeddings=embedding, allow_dangerous_deserialization=True)
+        return vector_db
+
+    documents = retrieve_documents(raw_file)
     vector_db = get_vector_db(documents, embeddings=embedding)
+    vector_db.save_local(folder_path="data/vector_db/", index_name="faiss_index")
+
+    return vector_db

@@ -7,3 +7,5 @@ sentence-transformers
 einops
 faiss-cpu
 tiktoken
+python-telegram-bot
+pypdf

@@ -10,17 +10,19 @@ from langchain_core.messages import HumanMessage
 # TODO : add the function to create
 from dotenv import load_dotenv
 import os
+from processing.utils import create_db
+
 
 class WelcomeChatBot:
 
-    def __init__(self, vector_db):
-        self.vectorstore = vector_db
+    def __init__(self, db_path='/Users/hamza/Desktop/Layzap-Hackathon/data/vector_db'):
+        self.vectorstore = create_db(db_path)
+
         self.retriever = self.vectorstore.as_retriever(search_type="similarity", search_kwargs={'k': 6})
 
         #self.memory = ConversationBufferMemory()
         self.chat_history = []
 
-    
     def setup_config(self):
 
         load_dotenv()
@@ -63,3 +65,8 @@ class WelcomeChatBot:
         self.chat_history.append(f'AI : {answer.content}')
 
         return answer.content        
+    
+chatbot = WelcomeChatBot()
+chatbot.setup_config()
+
+print(chatbot.get_answer("What are the best swiss banks ? "))
