@@ -79,8 +79,12 @@ async def country(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
 async def question(update: Update, context: ContextTypes.DEFAULT_TYPE) -> int:
     """Stores the country and asks for a question."""
     user = update.message.from_user
-    logger.info(f"{user} says : {update.message.text}")
-    await update.message.reply_text(update.message.text)
+    logger.info(f"{user.first_name} says : {update.message.text}")
+    
+    await update.message.reply_text(update.message.text) ### A SUPPRIMER
+    
+    ### FONCTION RECHERCHE ET REPONSE : INPUT (string update.message.text), OUTPUT (string réponse)
+    ### Elle doit 
 
     return QUESTION
 
