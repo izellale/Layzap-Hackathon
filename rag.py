@@ -3,34 +3,63 @@ from langchain.chains import (
 )
 from langchain.chains.conversation.memory import ConversationBufferMemory
 from langchain_core.prompts import PromptTemplate
-from langchain_community.llms import OpenAI
+from langchain_openai import ChatOpenAI
+from langchain_community.vectorstores import FAISS
+from langchain_core.messages import HumanMessage
 
 # TODO : add the function to create
-from utils import get_vector_db
+from dotenv import load_dotenv
+import os
 
-combine_docs_chain = StuffDocumentsChain(...)
-vectorstore = get_vector_db()
-retriever = vectorstore.as_retriever()
+class WelcomeChatBot:
 
-# set retriever's number of docs to get
+    def __init__(self, vector_db):
+        self.vectorstore = vector_db
+        self.retriever = self.vectorstore.as_retriever(search_type="similarity", search_kwargs={'k': 6})
 
-# This controls how the standalone question is generated.
-# Should take `chat_history` and `question` as input variables.
-template = (
-    "Combine the chat history and follow up question into "
-    "a standalone question. Chat History: {chat_history}"
-    "Follow up question: {question}"
-)
+        #self.memory = ConversationBufferMemory()
+        self.chat_history = []
 
-prompt = PromptTemplate.from_template(template)
+    
+    def setup_config(self):
 
-llm = OpenAI()
+        load_dotenv()
 
-question_generator_chain = LLMChain(llm=llm, prompt=prompt)
+        os.environ["OPENAI_API_KEY"] = os.getenv('OPENAI_API_KEY')
 
-chain = ConversationalRetrievalChain(
-    combine_docs_chain=combine_docs_chain,
-    retriever=retriever,
-    question_generator=question_generator_chain,
-    memory=ConversationBufferMemory(),
-)
+        # set retriever's number of docs to get
+
+        # This controls how the standalone question is generated.
+        # Should take `chat_history` and `question` as input variables.
+
+        self.template = (
+            """ Anwer to the question given at the end, while using the given context, and chat history :
+                context : 
+                {context}
+
+                chat_history:
+                {chat_history}
+
+                question:
+                {question}
+
+                Your Answer : 
+            """
+        )
+
+        self.prompt = PromptTemplate.from_template(template=self.template)
+
+        self.llm = ChatOpenAI(model="gpt-4-0613", temperature=0.5)
+
+    def get_answer(self, user_query):
+        
+        docs = self.retriever.invoke(user_query)
+
+        query = self.template.format(chat_history=self.chat_history, context=docs, question=user_query)
+
+        answer = self.llm.invoke(query)
+
+        self.chat_history.append(f'USER : {user_query}')
+        self.chat_history.append(f'AI : {answer.content}')
+
+        return answer.content        
